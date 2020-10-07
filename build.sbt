@@ -52,7 +52,9 @@ lazy val root = (project in file("."))
       "com.lihaoyi" %% "sourcecode" % "0.2.1",
       compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
       compilerPlugin(("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)),
-      compilerPlugin(scalafixSemanticdb)
+
+      "com.typesafe.slick" %% "slick" % "3.3.3",
+      "org.typelevel" %% "cats-core" % "2.2.0"
     )
   )
 
