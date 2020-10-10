@@ -5,7 +5,7 @@ import org.http4s.HttpApp
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.CORS
-import ru.rurik.http.ExpenseService
+import ru.rurik.interfaces.http.ExpenseService
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.interop.catz._
@@ -19,9 +19,6 @@ object ZioHttpStarter extends App {
 
   val port = 8080
 
-  val layer: ZLayer[Blocking, Throwable, Logging with Blocking] =
-    Blocking.any  ++ Slf4jLogger.make((_, msg) => msg)
-
   override def run(args: List[String]): ZIO[ZEnv, Nothing, ZExitCode] = {
     val prog =
       for {
@@ -33,7 +30,7 @@ object ZioHttpStarter extends App {
         _ <- runHttp(httpApp, port)
       } yield ZExitCode.success
 
-    prog.provideSomeLayer[ZEnv](layer).orDie
+    prog.provideSomeLayer[ZEnv](Layers.live.layer).orDie
   }
 
   def runHttp[R <: Clock](httpApp: HttpApp[RIO[R, *]], port: Int): ZIO[R, Throwable, Unit] = {

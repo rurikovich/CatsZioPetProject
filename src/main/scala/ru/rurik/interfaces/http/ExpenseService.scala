@@ -1,4 +1,4 @@
-package ru.rurik.http
+package ru.rurik.interfaces.http
 
 import io.circe.Encoder
 import org.http4s._

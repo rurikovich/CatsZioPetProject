@@ -54,7 +54,8 @@ lazy val root = (project in file("."))
       compilerPlugin(("org.typelevel" % "kind-projector" % "0.11.0").cross(CrossVersion.full)),
 
       "com.typesafe.slick" %% "slick" % "3.3.3",
-      "org.typelevel" %% "cats-core" % "2.2.0"
+      "org.typelevel" %% "cats-core" % "2.2.0",
+      "org.postgresql" % "postgresql" % "42.2.17"
     )
   )
 
