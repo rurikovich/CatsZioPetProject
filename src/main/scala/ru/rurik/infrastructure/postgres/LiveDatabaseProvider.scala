@@ -1,5 +1,6 @@
-package ru.rurik.infrastructure.db
+package ru.rurik.infrastructure.postgres
 
+import ru.rurik.infrastructure.db.DatabaseProvider
 import slick.jdbc.JdbcBackend.Database
 import zio.ZIO
 

@@ -1,7 +1,7 @@
-package ru.rurik.infrastructure
+package ru.rurik.infrastructure.postgres
 
 import ru.rurik.infrastructure.db.DatabaseProvider
-import slick.jdbc.H2Profile.backend._
+import slick.jdbc.JdbcBackend.Database
 import zio.ZIO
 
 trait PostgresDatabaseProvider extends DatabaseProvider {

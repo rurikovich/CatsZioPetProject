@@ -1,4 +1,4 @@
-package ru.rurik.infrastructure.tables
+package ru.rurik.infrastructure.postgres.tables
 
 import ru.rurik.domain.expence.Expense
 import slick.jdbc.H2Profile.api._
