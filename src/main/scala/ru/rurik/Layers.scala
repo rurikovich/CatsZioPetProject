@@ -1,7 +1,8 @@
 package ru.rurik
 
-import ru.rurik.domain.expence.repository.{ExpenceRepository, PostrgresExpenceRepository}
+import ru.rurik.domain.expence.repository.ExpenceRepository
 import ru.rurik.expence.repository.ExpenceRepository
+import ru.rurik.infrastructure.postgres.PostrgresExpenceRepository
 import zio.ZLayer
 import zio.blocking.Blocking
 import zio.logging.Logging
