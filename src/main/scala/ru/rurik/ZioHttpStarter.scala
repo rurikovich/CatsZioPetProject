@@ -1,21 +1,22 @@
 package ru.rurik
 
 import cats.effect.ExitCode
-import org.http4s.HttpApp
+import org.http4s.{HttpApp, HttpRoutes}
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.CORS
+import ru.rurik.infrastructure.db.DatabaseProvider
 import ru.rurik.interfaces.http.ExpenseService
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.interop.catz._
-import zio.logging.Logging
-import zio.logging.slf4j.Slf4jLogger
-import zio.{App, RIO, Runtime, ZEnv, ZIO, logging, ExitCode => ZExitCode, _}
-
+import zio.{App, RIO, Runtime, ZEnv, ZIO, logging, ExitCode => ZExitCode}
+import fs2.Stream.Compiler._
 import org.http4s.implicits._
+
+
 object ZioHttpStarter extends App {
-  type AppTask[A] = RIO[Clock, A]
+  type AppTask[A] = RIO[DatabaseProvider with Blocking with Clock, A]
 
   val port = 8080
 
@@ -23,14 +24,16 @@ object ZioHttpStarter extends App {
     val prog =
       for {
         _ <- logging.log.info(s"Starting")
-        httpApp = Router[AppTask](
+        value: HttpRoutes[AppTask] = Router[AppTask](
           "/reports" -> ExpenseService.routes()
-        ).orNotFound
+        )
+
+        httpApp = value.orNotFound
 
         _ <- runHttp(httpApp, port)
       } yield ZExitCode.success
 
-    prog.provideSomeLayer[ZEnv](Layers.live.layer).orDie
+    prog.provideSomeLayer[ZEnv](Layers.live.appLayer).orDie
   }
 
   def runHttp[R <: Clock](httpApp: HttpApp[RIO[R, *]], port: Int): ZIO[R, Throwable, Unit] = {
