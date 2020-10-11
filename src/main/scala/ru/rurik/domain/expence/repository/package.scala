@@ -1,4 +1,4 @@
-package ru.rurik.expence
+package ru.rurik.domain.expence
 
 import zio.Has
 
