@@ -13,10 +13,10 @@ import zio.interop.catz._
 import zio.{App, RIO, Runtime, ZEnv, ZIO, logging, ExitCode => ZExitCode}
 import fs2.Stream.Compiler._
 import org.http4s.implicits._
-
+import ru.rurik.domain.expence.repository.ExpenceRepository
 
 object ZioHttpStarter extends App {
-  type AppTask[A] = RIO[DatabaseProvider with Blocking with Clock, A]
+  type AppTask[A] = RIO[ExpenceRepository with DatabaseProvider with Blocking with Clock, A]
 
   val port = 8080
 
