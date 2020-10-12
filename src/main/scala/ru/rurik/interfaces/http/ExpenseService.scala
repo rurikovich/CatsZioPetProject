@@ -23,10 +23,13 @@ object ExpenseService {
     implicit def circeJsonEncoder[A: Encoder]: EntityEncoder[ExpenseTask, A] = jsonEncoderOf[ExpenseTask, A]
 
 
+    import io.circe.generic.auto._
+
+
     HttpRoutes.of[ExpenseTask] {
       case GET -> Root / LongVar(id) =>
         ExpenceRepository.getById(id).flatMap {
-          _.fold(NotFound())(x => Ok(x.toString))
+          _.fold(NotFound())(x => Ok(x))
         }
 
     }
