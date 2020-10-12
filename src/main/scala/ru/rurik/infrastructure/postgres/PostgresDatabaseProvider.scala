@@ -7,7 +7,7 @@ import zio.{ZIO, ZLayer}
 final class PostgresDatabaseProvider extends DatabaseProvider.Service {
   override val db = ZIO.effectTotal(
     Database.forURL(
-      url = "jdbc:postgresql://localhost/test_db?user=postgres&password=mysecretpassword",
+      url = "jdbc:postgresql://localhost/postgres?user=postgres&password=mysecretpassword",
       driver = "org.postgresql.Driver"
     )
   )

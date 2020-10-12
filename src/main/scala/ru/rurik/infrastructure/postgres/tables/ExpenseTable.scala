@@ -9,8 +9,8 @@ object ExpenseTable {
 
   implicit object ExpenseShape extends CaseClassShape(LiftedExpense.tupled, Expense.tupled)
 
-  class Expenses(tag: Tag) extends Table[Expense](tag, "EXPENSES") {
-    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
+  class Expenses(tag: Tag) extends Table[Expense](tag, "expenses") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
     def amount = column[Long]("amount")
 
