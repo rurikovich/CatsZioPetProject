@@ -1,6 +1,8 @@
 package ru.rurik.infrastructure.postgres
 
-import ru.rurik.domain.expence.Expense
+import cats.implicits._
+import cats.data.Nested
+import ru.rurik.domain.expence.{Expense, ExpenseTree}
 import ru.rurik.domain.expence.repository.ExpenceRepository
 import ru.rurik.infrastructure.db.DatabaseProvider
 import ru.rurik.infrastructure.db.dbio._
@@ -15,8 +17,31 @@ class PostrgresExpenceRepository(dbProvider: DatabaseProvider) extends ExpenceRe
 
   override def getById(id: Long): Task[Option[Expense]] = {
     val query = expenses.filter(_.id === id)
-    ZIO.fromDBIO(query.result).provide(dbProvider).map(_.toList.headOption)
+    ZIO.fromDBIO(query.result).provide(dbProvider).map {
+      res =>
+        res.toList.headOption
+    }
   }
+
+
+  def fetchExpenseTreeLayer(eTree: ExpenseTree): Task[List[ExpenseTree]] = {
+    val ids: List[Long] = Nested(eTree.subExpenses).map(_.id).value.getOrElse(List.empty)
+    val query = expenses.filter(_.id inSet ids)
+    ZIO.fromDBIO(query.result).provide(dbProvider).map(_.toList)
+  }
+
+
+  override def getFullExpenseTree(id: Long): Task[Option[ExpenseTree]] = {
+    val query = expenses.filter(_.id === id)
+
+    ZIO.fromDBIO(query.result).provide(dbProvider).map {
+      res =>
+        res.toList.headOption
+    }
+
+
+  }
+
 
 }
 
