@@ -24,24 +24,10 @@ class PostrgresExpenceRepository(dbProvider: DatabaseProvider) extends ExpenceRe
   }
 
 
-  def fetchExpenseTreeLayer(eTree: ExpenseTree): Task[List[ExpenseTree]] = {
-    val ids: List[Long] = Nested(eTree.subExpenses).map(_.id).value.getOrElse(List.empty)
+  def getByIds(ids: List[Long]): Task[Option[List[Expense]]] = {
     val query = expenses.filter(_.id inSet ids)
-    ZIO.fromDBIO(query.result).provide(dbProvider).map(_.toList)
+    ZIO.fromDBIO(query.result).provide(dbProvider).map(_.toList.some)
   }
-
-
-  override def getFullExpenseTree(id: Long): Task[Option[ExpenseTree]] = {
-    val query = expenses.filter(_.id === id)
-
-    ZIO.fromDBIO(query.result).provide(dbProvider).map {
-      res =>
-        res.toList.headOption
-    }
-
-
-  }
-
 
 }
 
