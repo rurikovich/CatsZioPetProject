@@ -1,20 +1,26 @@
 package ru.rurik.infrastructure.postgres.tables
 
-import ru.rurik.domain.expence.Expense
-import slick.jdbc.H2Profile.api._
+import slick.jdbc.PostgresProfile.api._
 
 object ExpenseTable {
 
-  case class LiftedExpense(id: Rep[Long], amount: Rep[Long])
+  case class LiftedExpense(id: Rep[Long], name: Rep[String], amount: Rep[Long])
 
-  implicit object ExpenseShape extends CaseClassShape(LiftedExpense.tupled, Expense.tupled)
+  implicit object ExpenseShape extends CaseClassShape(LiftedExpense.tupled, DbExpense.tupled)
 
-  class Expenses(tag: Tag) extends Table[Expense](tag, "expenses") {
-    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+  case class DbExpense(id: Long, name: String, amount: Long)
 
-    def amount = column[Long]("amount")
 
-    def * = LiftedExpense(id, amount)
+  class Expenses(tag: Tag) extends Table[DbExpense](tag, "EXPENSES") {
+
+    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
+
+    def name = column[String]("NAME")
+
+    def amount = column[Long]("AMOUNT")
+
+    def * = LiftedExpense(id, name, amount)
+
   }
 
 }

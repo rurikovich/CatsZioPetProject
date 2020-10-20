@@ -1,8 +1,7 @@
 package ru.rurik.infrastructure.postgres
 
 import cats.implicits._
-import cats.data.Nested
-import ru.rurik.domain.expence.{Expense, ExpenseTree}
+import ru.rurik.domain.expence.Expense
 import ru.rurik.domain.expence.repository.ExpenceRepository
 import ru.rurik.infrastructure.db.DatabaseProvider
 import ru.rurik.infrastructure.db.dbio._
@@ -18,15 +17,19 @@ class PostrgresExpenceRepository(dbProvider: DatabaseProvider) extends ExpenceRe
   override def getById(id: Long): Task[Option[Expense]] = {
     val query = expenses.filter(_.id === id)
     ZIO.fromDBIO(query.result).provide(dbProvider).map {
-      res =>
-        res.toList.headOption
+      res: Seq[ExpenseTable.DbExpense] =>
+        res.toList.map(
+          dbExp => Expense(dbExp.id, dbExp.name, dbExp.amount)
+        ).headOption
     }
   }
 
 
   def getByIds(ids: List[Long]): Task[Option[List[Expense]]] = {
     val query = expenses.filter(_.id inSet ids)
-    ZIO.fromDBIO(query.result).provide(dbProvider).map(_.toList.some)
+    ZIO.fromDBIO(query.result).provide(dbProvider).map(_.toList.map(
+      dbExp => Expense(dbExp.id, dbExp.name, dbExp.amount)
+    ).some)
   }
 
 }

@@ -8,6 +8,8 @@ import zio.{RIO, ZIO}
 
 object ExpenseService {
 
+  def testGetById(): RIO[ExpenceRepository, Option[Expense]] = ZIO.accessM[ExpenceRepository](_.get.getById(1))
+
   def constructExpenseTree(id: Long): RIO[ExpenceRepository, Option[ExpenseTree]] = ZIO.accessM[ExpenceRepository](_.get.getById(id)).flatMap {
     case Some(expense) => fetchExpenseTree(expense).map(_.some)
     case None => RIO.succeed[Option[ExpenseTree]](None)
@@ -16,8 +18,8 @@ object ExpenseService {
   def fetchExpenseTree(expense: Expense): RIO[ExpenceRepository, ExpenseTree] = expense.subExpenses match {
     case Some(ids) =>
       for {
-        leafsOpt: Option[List[Expense]] <- ZIO.accessM[ExpenceRepository](_.get.getByIds(ids))
-        expenseTree: ExpenseTree <- fetchExpenseTreeWithSubExpenses(expense, leafsOpt.getOrElse(List.empty[Expense]))
+        leafsOpt <- ZIO.accessM[ExpenceRepository](_.get.getByIds(ids))
+        expenseTree <- fetchExpenseTreeWithSubExpenses(expense, leafsOpt.getOrElse(List.empty[Expense]))
       } yield expenseTree
 
     case None => RIO(ExpenseTree(expense))
