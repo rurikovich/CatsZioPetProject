@@ -24,12 +24,8 @@ object ZioHttpStarter extends App {
     val prog =
       for {
         _ <- logging.log.info(s"Starting")
-        value: HttpRoutes[AppTask] = Router[AppTask](
-          "/reports" -> ExpenseService.routes()
-        )
-
+        value: HttpRoutes[AppTask] = Router[AppTask]("/reports" -> ExpenseService.routes())
         httpApp = value.orNotFound
-
         _ <- runHttp(httpApp, port)
       } yield ZExitCode.success
 

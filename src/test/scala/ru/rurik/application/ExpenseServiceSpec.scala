@@ -12,7 +12,7 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
 
       testM("constructExpenseTree") {
 
-         assertM(ExpenseService.testGetById())(equalTo(Some(Expense(1,"name",1,None))))
+        assertM(ExpenseService.testGetById())(equalTo(Some(Expense(1, "name", 1, None))))
 
       }.provideSomeLayer(TestExpenceRepository.layer)
 
@@ -23,9 +23,8 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
 
 
 class TestExpenceRepository extends ExpenceRepository.Service {
-  override def getById(id: Long): Task[Option[Expense]] = Task(Some(Expense(1,"name",1,None)))
+  override def getById(id: Long): Task[Option[Expense]] = Task(Some(Expense(1, "name", 1, None)))
 
-  override def getByIds(ids: List[Long]): Task[Option[List[Expense]]] = Task(Some(List(Expense(1,"name",1,None))))
 }
 
 object TestExpenceRepository {

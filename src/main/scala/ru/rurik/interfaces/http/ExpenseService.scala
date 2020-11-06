@@ -10,9 +10,9 @@ import zio._
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.interop.catz._
+import io.circe.generic.auto._
 
 object ExpenseService {
-
 
   def routes[R <: ExpenceRepository with DatabaseProvider with Blocking with Clock](): HttpRoutes[RIO[R, ?]] = {
     type ExpenseTask[A] = RIO[R, A]
@@ -22,16 +22,9 @@ object ExpenseService {
 
     implicit def circeJsonEncoder[A: Encoder]: EntityEncoder[ExpenseTask, A] = jsonEncoderOf[ExpenseTask, A]
 
-
-    import io.circe.generic.auto._
-
-
     HttpRoutes.of[ExpenseTask] {
       case GET -> Root / LongVar(id) =>
-        ExpenceRepository.getById(id).flatMap {
-          _.fold(NotFound())(x => Ok(x))
-        }
-
+        ExpenceRepository.getById(id).flatMap(_.fold(NotFound())(x => Ok(x)))
     }
 
   }

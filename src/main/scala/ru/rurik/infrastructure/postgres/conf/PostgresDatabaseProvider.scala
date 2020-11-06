@@ -1,4 +1,4 @@
-package ru.rurik.infrastructure.postgres
+package ru.rurik.infrastructure.postgres.conf
 
 import ru.rurik.infrastructure.db.DatabaseProvider
 import slick.jdbc.JdbcBackend.Database
