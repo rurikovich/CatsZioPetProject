@@ -25,6 +25,7 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
 class TestExpenceRepository extends ExpenceRepository.Service {
   override def getById(id: Long): Task[Option[Expense]] = Task(Some(Expense(1, "name", 1, None)))
 
+  override def getByParentId(id: Long): Task[List[Expense]] = Task(List())
 }
 
 object TestExpenceRepository {

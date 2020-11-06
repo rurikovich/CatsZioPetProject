@@ -23,6 +23,14 @@ class PostrgresExpenceRepository(dbProvider: DatabaseProvider) extends ExpenceRe
     }
   }
 
+  override def getByParentId(id: Long): Task[List[Expense]] = {
+    val query = expenses.filter(_.parentId === id)
+    ZIO.fromDBIO(query.result).provide(dbProvider).map {
+      _.map(
+        dbExp => Expense(dbExp.id, dbExp.name, dbExp.amount, dbExp.parentId)
+      ).toList
+    }
+  }
 }
 
 object PostrgresExpenceRepository {
