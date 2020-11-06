@@ -3,6 +3,7 @@ package ru.rurik
 import ru.rurik.domain.expence.repository.ExpenceRepository
 import ru.rurik.infrastructure.db.DatabaseProvider
 import ru.rurik.infrastructure.postgres.PostrgresExpenceRepository
+import ru.rurik.infrastructure.postgres.conf.PostgresDatabaseProvider
 import zio.ZLayer
 import zio.blocking.Blocking
 import zio.logging.Logging
