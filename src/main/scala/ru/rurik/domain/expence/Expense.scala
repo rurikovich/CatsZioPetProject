@@ -6,10 +6,10 @@ object ExpenseCategory extends Enumeration {
   val Appliances = Value("бытовая техника")
   val Services = Value("услуги")
   val Other = Value("прочее")
-}
 
-import  ExpenseCategory._
+  }
 
+import ExpenseCategory._
 case class Expense(id: Long, name: String, category: ExpenseCategory, amount: Long, parentId: Option[Long] = None)
 
 

@@ -1,16 +1,17 @@
 package ru.rurik.interfaces.http
 
-import io.circe.Encoder
-import org.http4s._
-import org.http4s.circe._
-import org.http4s.dsl.Http4sDsl
+import org.http4s.{EntityDecoder, HttpRoutes}
 import ru.rurik.domain.expence.repository.ExpenceRepository
+import ru.rurik.domain.expence.repository.ExpenceRepository._
 import ru.rurik.infrastructure.db.DatabaseProvider
-import zio._
 import zio.blocking.Blocking
 import zio.clock.Clock
+import io.circe.{ Decoder }
+import org.http4s.circe._
+import org.http4s.dsl.Http4sDsl
+import zio._
 import zio.interop.catz._
-//import io.circe.generic.auto._
+
 
 object ExpenseService {
 
@@ -20,11 +21,27 @@ object ExpenseService {
     val dsl: Http4sDsl[ExpenseTask] = Http4sDsl[ExpenseTask]
     import dsl._
 
-    implicit def circeJsonEncoder[A: Encoder]: EntityEncoder[ExpenseTask, A] = jsonEncoderOf[ExpenseTask, A]
+    implicit def circeJsonDecoder[A: Decoder]: EntityDecoder[ExpenseTask, A] = jsonOf[ExpenseTask, A]
+
 
     HttpRoutes.of[ExpenseTask] {
+
+      case req@POST -> Root =>
+        req.decode[ExpenseExternalDto] {
+          data: ExpenseExternalDto =>
+            Ok(data.toString)
+        }
+
+
       case GET -> Root / LongVar(id) =>
         ExpenceRepository.getById(id).flatMap(_.fold(NotFound())(x => Ok(x.toString)))
+
+      case PUT -> Root / LongVar(id) =>
+        getById(id).flatMap(_.fold(NotFound())(x => Ok(x.toString)))
+
+      case DELETE -> Root / LongVar(id) =>
+        getById(id).flatMap(_.fold(NotFound())(x => Ok(x.toString)))
+
     }
 
   }

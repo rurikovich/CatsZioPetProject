@@ -32,7 +32,7 @@ lazy val root = (project in file("."))
       "org.http4s" %% "http4s-dsl" % "0.21.7",
       "io.circe" %% "circe-core" % "0.13.0",
       "io.circe" %% "circe-generic" % "0.13.0",
-      "io.circe" %% "circe-literal" % "0.13.0" % "test",
+      "io.circe" %% "circe-literal" % "0.13.0" ,
       "org.tpolecat" %% "doobie-core" % "0.9.2",
       "org.tpolecat" %% "doobie-hikari" % "0.9.2",
       "org.typelevel" %% "jawn-parser" % "1.0.0" % "test",
