@@ -3,7 +3,7 @@ package ru.rurik.application
 import ru.rurik.domain.expence.Expense
 import ru.rurik.domain.expence.repository.ExpenceRepository
 import ru.rurik.domain.expence.tree.ExpenseTree
-import zio.{RIO, ZIO}
+import zio.{RIO, Task, ZIO}
 
 object ExpenseService extends ZIOHelper {
 
@@ -14,5 +14,9 @@ object ExpenseService extends ZIOHelper {
     subExpensesRIOList: List[RIO[ExpenceRepository, Option[ExpenseTree]]] = subExpenses.map(_.id).map(constructExpenseTree)
     expenseTreeList: List[ExpenseTree] <- toListOfZIO(subExpensesRIOList)
   } yield expenseOpt.map(ExpenseTree(_, Some(expenseTreeList)))
+
+  //TODO thing about signature. what should it return Option[Expense] or Boolean or something else ?
+  def deleteExpenseTree(id: Long): Task[Option[Expense]] = ???
+
 
 }

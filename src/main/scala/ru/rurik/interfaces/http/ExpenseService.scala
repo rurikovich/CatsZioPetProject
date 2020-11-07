@@ -10,7 +10,7 @@ import zio._
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.interop.catz._
-import io.circe.generic.auto._
+//import io.circe.generic.auto._
 
 object ExpenseService {
 
@@ -24,7 +24,7 @@ object ExpenseService {
 
     HttpRoutes.of[ExpenseTask] {
       case GET -> Root / LongVar(id) =>
-        ExpenceRepository.getById(id).flatMap(_.fold(NotFound())(x => Ok(x)))
+        ExpenceRepository.getById(id).flatMap(_.fold(NotFound())(x => Ok(x.toString)))
     }
 
   }

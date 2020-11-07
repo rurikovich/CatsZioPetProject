@@ -1,6 +1,7 @@
 package ru.rurik.application
 
 import ru.rurik.domain.expence.Expense
+import ru.rurik.domain.expence.ExpenseCategory._
 import ru.rurik.domain.expence.repository.ExpenceRepository
 import ru.rurik.domain.expence.tree.ExpenseTree
 import zio.test.Assertion.equalTo
@@ -16,10 +17,10 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
         assertM(ExpenseService.constructExpenseTree(1))(
           equalTo(
             Some(
-              ExpenseTree(Expense(1, "name", 1, None),
+              ExpenseTree(Expense(1, "name", Food, 1, None),
                 Some(List(
-                  ExpenseTree(Expense(2, "name", 1, Some(1)), Some(List())),
-                  ExpenseTree(Expense(3, "name", 1, Some(1)), Some(List())))
+                  ExpenseTree(Expense(2, "name", Food, 1, Some(1)), Some(List())),
+                  ExpenseTree(Expense(3, "name", Food, 1, Some(1)), Some(List())))
                 ))
             )
           )
@@ -36,9 +37,9 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
 class TestExpenceRepository extends ExpenceRepository.Service {
 
   val expenses = List(
-    Expense(1, "name", 1, None),
-    Expense(2, "name", 1, Some(1)),
-    Expense(3, "name", 1, Some(1))
+    Expense(1, "name", Food, 1, None),
+    Expense(2, "name", Food, 1, Some(1)),
+    Expense(3, "name", Food, 1, Some(1))
   )
 
   //TODO replace by  expression using CATS
@@ -47,6 +48,12 @@ class TestExpenceRepository extends ExpenceRepository.Service {
   override def getByParentId(id: Long): Task[List[Expense]] = Task(
     expenses.filter(_.parentId.contains(id))
   )
+
+  override def create(expense: Expense): Task[Option[Expense]] = ???
+
+  override def update(id: Long, expense: Expense): Task[Option[Expense]] = ???
+
+  override def delete(id: Long): Task[Option[Expense]] = ???
 }
 
 object TestExpenceRepository {

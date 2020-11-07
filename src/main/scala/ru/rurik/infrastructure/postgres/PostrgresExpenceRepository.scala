@@ -18,7 +18,7 @@ class PostrgresExpenceRepository(dbProvider: DatabaseProvider) extends ExpenceRe
     ZIO.fromDBIO(query.result).provide(dbProvider).map {
       res: Seq[ExpenseTable.DbExpense] =>
         res.headOption.map(
-          dbExp => Expense(dbExp.id, dbExp.name, dbExp.amount, dbExp.parentId)
+          dbExp => Expense(dbExp.id, dbExp.name, dbExp.category, dbExp.amount, dbExp.parentId)
         )
     }
   }
@@ -27,10 +27,16 @@ class PostrgresExpenceRepository(dbProvider: DatabaseProvider) extends ExpenceRe
     val query = expenses.filter(_.parentId === id)
     ZIO.fromDBIO(query.result).provide(dbProvider).map {
       _.map(
-        dbExp => Expense(dbExp.id, dbExp.name, dbExp.amount, dbExp.parentId)
+        dbExp => Expense(dbExp.id, dbExp.name, dbExp.category, dbExp.amount, dbExp.parentId)
       ).toList
     }
   }
+
+  override def create(expense: Expense): Task[Option[Expense]] = ???
+
+  override def update(id: Long, expense: Expense): Task[Option[Expense]] = ???
+
+  override def delete(id: Long): Task[Option[Expense]] = ???
 }
 
 object PostrgresExpenceRepository {
