@@ -13,8 +13,7 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
     suite("ExpenseService") {
 
       testM("constructExpenseTree") {
-
-        assertM(ExpenseService.constructExpenseTree(1))(
+        assertM(ExpenseService.getExpenseTree(1))(
           equalTo(
             Some(
               ExpenseTree(Expense(Some(1), "name", Food, 1, None),
@@ -25,8 +24,15 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
             )
           )
         )
+      }.provideSomeLayer(TestExpenceRepository.layer)
+
+
+      testM("getExpensesIds") {
+
+        assertM(ExpenseService.getExpensesIds(1))(equalTo(List(1L, 2L, 3L)))
 
       }.provideSomeLayer(TestExpenceRepository.layer)
+
 
     }
 
