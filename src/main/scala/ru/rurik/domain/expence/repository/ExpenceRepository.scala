@@ -12,12 +12,13 @@ object ExpenceRepository {
 
     def create(expense: Expense): Task[Expense]
 
-    def update(id: Long, expense: Expense): Task[Option[Expense]]
+    def update(expense: Expense): Task[Option[Expense]]
 
     /*
     This method deletes only single expense, not related subExpenses
+    return count of affected rows
      */
-    def delete(id: Long): Task[Option[Expense]]
+    def delete(id: Long): Task[Int]
   }
 
   def create(expense: Expense): RIO[ExpenceRepository, Expense] = ZIO.accessM(_.get.create(expense))
@@ -26,8 +27,8 @@ object ExpenceRepository {
 
   def getByParentId(id: Long): RIO[ExpenceRepository, List[Expense]] = ZIO.accessM(_.get.getByParentId(id))
 
-  def update(id: Long, expense: Expense): RIO[ExpenceRepository, Option[Expense]] = ZIO.accessM(_.get.update(id, expense))
+  def update(expense: Expense): RIO[ExpenceRepository, Option[Expense]] = ZIO.accessM(_.get.update(expense))
 
-  def delete(id: Long): RIO[ExpenceRepository, Option[Expense]] = ZIO.accessM(_.get.delete(id))
+  def delete(id: Long): RIO[ExpenceRepository, Int] = ZIO.accessM(_.get.delete(id))
 
 }

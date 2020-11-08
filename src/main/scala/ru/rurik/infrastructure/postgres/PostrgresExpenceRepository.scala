@@ -14,31 +14,28 @@ class PostrgresExpenceRepository(dbProvider: DatabaseProvider) extends ExpenceRe
   val expenses = TableQuery[ExpenseTable.Expenses]
   val insertQuery = expenses returning expenses.map(_.id) into ((expense, id) => expense.copy(id = id))
 
+  def updateAction(expense: Expense) = (expenses returning expenses).insertOrUpdate(expense)
+
   override def getById(id: Long): Task[Option[Expense]] = {
     val query = expenses.filter(_.id === id)
-    ZIO.fromDBIO(query.result).provide(dbProvider).map {
-      res: Seq[Expense] =>
-        res.headOption.map(
-          dbExp => Expense(dbExp.id, dbExp.name, dbExp.category, dbExp.amount, dbExp.parentId)
-        )
-    }
+    ZIO.fromDBIO(query.result).provide(dbProvider).map(_.headOption)
   }
 
   override def getByParentId(id: Long): Task[List[Expense]] = {
-    val query: Query[ExpenseTable.Expenses, Expense, Seq] = expenses.filter(_.parentId === id)
-    ZIO.fromDBIO(query.result).provide(dbProvider).map {
-      _.map(
-        dbExp => Expense(dbExp.id, dbExp.name, dbExp.category, dbExp.amount, dbExp.parentId)
-      ).toList
-    }
+    val query = expenses.filter(_.parentId === id)
+    ZIO.fromDBIO(query.result).provide(dbProvider).map(_.toList)
   }
 
   //TODO redesign to Option[Expense]
   override def create(expense: Expense): Task[Expense] = ZIO.fromDBIO(insertQuery += expense).provide(dbProvider)
 
-  override def update(id: Long, expense: Expense): Task[Option[Expense]] = ???
+  override def update(expense: Expense): Task[Option[Expense]] = ZIO.fromDBIO(updateAction(expense)).provide(dbProvider)
 
-  override def delete(id: Long): Task[Option[Expense]] = ???
+  /*
+  return count of affected rows
+   */
+  override def delete(id: Long): Task[Int] = ZIO.fromDBIO(expenses.filter(_.id === id).delete).provide(dbProvider)
+
 }
 
 object PostrgresExpenceRepository {

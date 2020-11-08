@@ -45,15 +45,13 @@ class TestExpenceRepository extends ExpenceRepository.Service {
   //TODO replace by  expression using CATS
   override def getById(id: Long): Task[Option[Expense]] = Task(expenses.find(_.id.exists(_ == id)))
 
-  override def getByParentId(id: Long): Task[List[Expense]] = Task(
-    expenses.filter(_.parentId.contains(id))
-  )
+  override def getByParentId(id: Long): Task[List[Expense]] = Task(expenses.filter(_.parentId.contains(id)))
 
   override def create(expense: Expense): Task[Expense] = Task(expense)
 
-  override def update(id: Long, expense: Expense): Task[Option[Expense]] = ???
+  override def update(expense: Expense): Task[Option[Expense]] = Task(Some(expense))
 
-  override def delete(id: Long): Task[Option[Expense]] = ???
+  override def delete(id: Long): Task[Int] = Task(1)
 }
 
 object TestExpenceRepository {
