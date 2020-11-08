@@ -13,20 +13,13 @@ import ExpenseCategory._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-case class Expense(id: Long, name: String, category: ExpenseCategory, amount: Long, parentId: Option[Long] = None)
-
-object Expense {
-
-  import ExpenseCategoryJsonCodecs._
-
-  implicit val decoder: Decoder[Expense] = deriveDecoder
-
-  implicit val encoder: Encoder[Expense] = deriveEncoder
-
-}
+case class Expense(id: Option[Long]=None, name: String, category: ExpenseCategory, amount: Long, parentId: Option[Long] = None)
 
 
 object ExpenseCategoryJsonCodecs {
+  implicit val decoder: Decoder[Expense] = deriveDecoder
+  implicit val encoder: Encoder[Expense] = deriveEncoder
+
   implicit val genderDecoder: Decoder[ExpenseCategory.Value] = Decoder.decodeEnumeration(ExpenseCategory)
   implicit val genderEncoder: Encoder[ExpenseCategory.Value] = Encoder.encodeEnumeration(ExpenseCategory)
 }

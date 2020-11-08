@@ -14,6 +14,9 @@ import zio._
 import zio.interop.catz._
 
 
+import ru.rurik.domain.expence.ExpenseCategoryJsonCodecs._
+
+
 object ExpenseService {
 
   def routes[R <: ExpenceRepository with DatabaseProvider with Blocking with Clock](): HttpRoutes[RIO[R, ?]] = {

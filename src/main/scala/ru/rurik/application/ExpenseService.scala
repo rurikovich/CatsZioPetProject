@@ -11,7 +11,7 @@ object ExpenseService extends ZIOHelper {
   def constructExpenseTree(id: Long): RIO[ExpenceRepository, Option[ExpenseTree]] = for {
     expenseOpt: Option[Expense] <- ZIO.accessM[ExpenceRepository](_.get.getById(id))
     subExpenses: List[Expense] <- ZIO.accessM[ExpenceRepository](_.get.getByParentId(id))
-    subExpensesRIOList: List[RIO[ExpenceRepository, Option[ExpenseTree]]] = subExpenses.map(_.id).map(constructExpenseTree)
+    subExpensesRIOList: List[RIO[ExpenceRepository, Option[ExpenseTree]]] = subExpenses.flatMap(_.id).map(constructExpenseTree)
     expenseTreeList: List[ExpenseTree] <- toListOfZIO(subExpensesRIOList)
   } yield expenseOpt.map(ExpenseTree(_, Some(expenseTreeList)))
 

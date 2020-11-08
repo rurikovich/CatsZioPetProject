@@ -17,10 +17,10 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
         assertM(ExpenseService.constructExpenseTree(1))(
           equalTo(
             Some(
-              ExpenseTree(Expense(1, "name", Food, 1, None),
+              ExpenseTree(Expense(Some(1), "name", Food, 1, None),
                 Some(List(
-                  ExpenseTree(Expense(2, "name", Food, 1, Some(1)), Some(List())),
-                  ExpenseTree(Expense(3, "name", Food, 1, Some(1)), Some(List())))
+                  ExpenseTree(Expense(Some(2), "name", Food, 1, Some(1)), Some(List())),
+                  ExpenseTree(Expense(Some(3), "name", Food, 1, Some(1)), Some(List())))
                 ))
             )
           )
@@ -37,21 +37,19 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
 class TestExpenceRepository extends ExpenceRepository.Service {
 
   val expenses = List(
-    Expense(1, "name", Food, 1, None),
-    Expense(2, "name", Food, 1, Some(1)),
-    Expense(3, "name", Food, 1, Some(1))
+    Expense(Some(1), "name", Food, 1, None),
+    Expense(Some(2), "name", Food, 1, Some(1)),
+    Expense(Some(3), "name", Food, 1, Some(1))
   )
 
   //TODO replace by  expression using CATS
-  override def getById(id: Long): Task[Option[Expense]] = Task(expenses.find(_.id == id))
+  override def getById(id: Long): Task[Option[Expense]] = Task(expenses.find(_.id.exists(_ == id)))
 
   override def getByParentId(id: Long): Task[List[Expense]] = Task(
     expenses.filter(_.parentId.contains(id))
   )
 
-  override def create(expense: Expense): Task[Boolean] =Task{
-    true
-  }
+  override def create(expense: Expense): Task[Expense] = Task(expense)
 
   override def update(id: Long, expense: Expense): Task[Option[Expense]] = ???
 

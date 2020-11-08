@@ -10,8 +10,7 @@ object ExpenceRepository {
 
     def getByParentId(id: Long): Task[List[Expense]]
 
-    //TODO redesign Expense to id:Option[Long] and generate id by DB autoInc
-    def create(expense: Expense): Task[Boolean]
+    def create(expense: Expense): Task[Expense]
 
     def update(id: Long, expense: Expense): Task[Option[Expense]]
 
@@ -21,7 +20,7 @@ object ExpenceRepository {
     def delete(id: Long): Task[Option[Expense]]
   }
 
-  def create(expense: Expense): RIO[ExpenceRepository, Boolean] = ZIO.accessM(_.get.create(expense))
+  def create(expense: Expense): RIO[ExpenceRepository, Expense] = ZIO.accessM(_.get.create(expense))
 
   def getById(id: Long): RIO[ExpenceRepository, Option[Expense]] = ZIO.accessM(_.get.getById(id))
 
