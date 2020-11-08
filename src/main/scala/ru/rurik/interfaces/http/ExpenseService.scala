@@ -2,7 +2,6 @@ package ru.rurik.interfaces.http
 
 import org.http4s.{EntityDecoder, EntityEncoder, HttpRoutes}
 import ru.rurik.domain.expence.repository.ExpenceRepository
-import ru.rurik.domain.expence.repository.ExpenceRepository._
 import ru.rurik.infrastructure.db.DatabaseProvider
 import zio.blocking.Blocking
 import zio.clock.Clock
@@ -35,22 +34,30 @@ object ExpenseService {
       case req@POST -> Root =>
         req.decode[Expense] {
           expense: Expense =>
-            ExpenceRepository.create(expense).flatMap(
-              _ => Ok("ss")
-            )
+            ExpenceRepository.create(expense).flatMap(Ok(_))
         }
 
-
       case GET -> Root / LongVar(id) =>
-        ExpenceRepository.getById(id).flatMap((r: Option[Expense]) => r.fold(NotFound())(x => Ok(x.toString)))
+        ExpenceRepository.getById(id).flatMap(_.fold(NotFound())(Ok(_)))
 
-      case PUT -> Root / LongVar(id) =>
-        getById(id).flatMap(
-          _.fold(NotFound())(x => Ok(x.toString))
-        )
+      case req@PUT -> Root =>
+        req.decode[Expense] {
+          expense: Expense =>
+            //TODO validate expense has id
+            //TODO  redesign to Either[Throwable,Option[Expense]]
+            ExpenceRepository.update(expense).flatMap {
+              case None => Ok(s"expense id=${expense.id} updated")
+              case Some(_) => Ok(s"expense id=${expense.id} inserted")
+              case _ => BadRequest(s"expense id=${expense.id}was NOT updated")
+            }
+        }
 
       case DELETE -> Root / LongVar(id) =>
-        getById(id).flatMap(_.fold(NotFound())(x => Ok(x.toString)))
+        ExpenceRepository.delete(id).flatMap {
+          case affectedCount: Int if affectedCount > 0 => Ok(s"expense id=$id deleted")
+          case _ => BadRequest(s"expense id=$id NOT deleted")
+        }
+
 
     }
 
