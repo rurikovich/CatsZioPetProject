@@ -10,12 +10,23 @@ object ExpenseCategory extends Enumeration {
 }
 
 import ExpenseCategory._
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
 case class Expense(id: Long, name: String, category: ExpenseCategory, amount: Long, parentId: Option[Long] = None)
 
+object Expense {
 
-object JsonProtocol {
+  import ExpenseCategoryJsonCodecs._
+
+  implicit val decoder: Decoder[Expense] = deriveDecoder
+
+  implicit val encoder: Encoder[Expense] = deriveEncoder
+
+}
+
+
+object ExpenseCategoryJsonCodecs {
   implicit val genderDecoder: Decoder[ExpenseCategory.Value] = Decoder.decodeEnumeration(ExpenseCategory)
   implicit val genderEncoder: Encoder[ExpenseCategory.Value] = Encoder.encodeEnumeration(ExpenseCategory)
 }

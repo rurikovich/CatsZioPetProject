@@ -8,17 +8,7 @@ object ExpenseTable {
 
   case class LiftedExpense(id: Rep[Long], name: Rep[String], category: Rep[ExpenseCategory], amount: Rep[Long], parentId: Rep[Option[Long]])
 
-//  implicit object ExpenseShape extends CaseClassShape(LiftedExpense.tupled, DbExpense.tupled)
-
   case class DbExpense(id: Long, name: String, category: ExpenseCategory, amount: Long, parentId: Option[Long])
-
-
-
-
-
-//  // custom case class mapping
-//  implicit object BShape extends CaseClassShape(LiftedB.tupled, B.tupled)
-
 
   implicit val expenseCategoryMapper = MappedColumnType.base[ExpenseCategory, String](
     e => e.toString,

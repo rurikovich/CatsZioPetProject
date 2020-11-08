@@ -49,7 +49,9 @@ class TestExpenceRepository extends ExpenceRepository.Service {
     expenses.filter(_.parentId.contains(id))
   )
 
-  override def create(expense: Expense): Task[Option[Expense]] = ???
+  override def create(expense: Expense): Task[Boolean] =Task{
+    true
+  }
 
   override def update(id: Long, expense: Expense): Task[Option[Expense]] = ???
 
