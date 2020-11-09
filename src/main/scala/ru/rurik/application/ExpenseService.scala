@@ -26,13 +26,6 @@ object ExpenseService extends ZIOHelper {
     sudIds: List[Long] <- zioListFlatten(subExpenses.flatMap(_.id.map(getExpensesIds)))
   } yield List(id) ::: sudIds
 
-
-  def zioListFlatten[R, E, A](zioList: List[ZIO[R, E, List[A]]]): ZIO[R, E, List[A]] = {
-    val start: ZIO[R, E, List[A]] = ZIO.succeed[List[A]](List.empty[A])
-    zioList.foldLeft(start)((acc, task) => acc.zipWith(task)(_ ::: _))
-  }
-
-
   def expenseTable(expenseTree: ExpenseTree): Task[Map[ExpenseCategory, Long]] = ???
 
 

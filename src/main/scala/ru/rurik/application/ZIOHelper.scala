@@ -13,4 +13,9 @@ trait ZIOHelper {
     }
   }
 
+  def zioListFlatten[R, E, A](zioList: List[ZIO[R, E, List[A]]]): ZIO[R, E, List[A]] = {
+    val start: ZIO[R, E, List[A]] = ZIO.succeed[List[A]](List.empty[A])
+    zioList.foldLeft(start)((acc, task) => acc.zipWith(task)(_ ::: _))
+  }
+
 }
