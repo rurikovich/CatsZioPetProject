@@ -28,13 +28,15 @@ class PostrgresExpenceRepository(dbProvider: DatabaseProvider) extends ExpenceRe
   override def create(expense: Expense): Task[Expense] = ZIO.fromDBIO(insertQuery += expense).provide(dbProvider)
 
   override def update(expense: Expense): Task[Option[Expense]] = ZIO.fromDBIO(
-    (expenses returning expenses ).insertOrUpdate(expense)
+    (expenses returning expenses).insertOrUpdate(expense)
   ).provide(dbProvider)
 
   /*
   return count of affected rows
    */
   override def delete(id: Long): Task[Int] = ZIO.fromDBIO(expenses.filter(_.id === id).delete).provide(dbProvider)
+
+  override def delete(ids: List[Long]): Task[Int] = ZIO.fromDBIO(expenses.filter(_.id.inSet(ids)).delete).provide(dbProvider)
 
 }
 

@@ -16,8 +16,10 @@ object ExpenseService extends ZIOHelper {
     expenseTreeList: List[ExpenseTree] <- toListOfZIO(subExpensesRIOList)
   } yield expenseOpt.map(ExpenseTree(_, Some(expenseTreeList)))
 
-  //TODO thing about signature. what should it return Option[Expense] or Boolean or something else ?
-  def deleteExpenseTree(id: Long): Task[Option[Expense]] = ???
+  def deleteExpenseTree(id: Long): RIO[ExpenceRepository, Int] = for {
+    ids <- getExpensesIds(id)
+    countOfDeleted <- ZIO.accessM[ExpenceRepository](_.get.delete(ids))
+  } yield countOfDeleted
 
   def getExpensesIds(id: Long): RIO[ExpenceRepository, List[Long]] = for {
     subExpenses: List[Expense] <- ZIO.accessM[ExpenceRepository](_.get.getByParentId(id))

@@ -9,32 +9,34 @@ import zio.test._
 import zio.{Task, ZLayer}
 
 object ExpenseServiceSpec extends DefaultRunnableSpec {
-  override def spec: ZSpec[_root_.zio.test.environment.TestEnvironment, Any] =
-    suite("ExpenseService") {
 
-      testM("constructExpenseTree") {
-        assertM(ExpenseService.getExpenseTree(1))(
-          equalTo(
-            Some(
-              ExpenseTree(Expense(Some(1), "name", Food, 1, None),
-                Some(List(
-                  ExpenseTree(Expense(Some(2), "name", Food, 1, Some(1)), Some(List())),
-                  ExpenseTree(Expense(Some(3), "name", Food, 1, Some(1)), Some(List())))
-                ))
-            )
+  val createSuite = suite("ExpenseService") {
+    testM("create") {
+      assertM(ExpenseService.getExpenseTree(1))(
+        equalTo(
+          Some(
+            ExpenseTree(Expense(Some(1), "name", Food, 1, None),
+              Some(List(
+                ExpenseTree(Expense(Some(2), "name", Food, 1, Some(1)), Some(List())),
+                ExpenseTree(Expense(Some(3), "name", Food, 1, Some(1)), Some(List())))
+              ))
           )
         )
-      }.provideSomeLayer(TestExpenceRepository.layer)
+      )
+    }.provideSomeLayer(TestExpenceRepository.layer)
+  }
 
+  val deleteSuite = suite("delete") {
+    testM("getExpensesIds") {
+      assertM(ExpenseService.getExpensesIds(1))(equalTo(List(1L, 2L, 3L)))
+    }.provideSomeLayer(TestExpenceRepository.layer)
 
-      testM("getExpensesIds") {
+    testM("deleteExpenseTree") {
+      assertM(ExpenseService.deleteExpenseTree(1))(equalTo(3))
+    }.provideSomeLayer(TestExpenceRepository.layer)
+  }
 
-        assertM(ExpenseService.getExpensesIds(1))(equalTo(List(1L, 2L, 3L)))
-
-      }.provideSomeLayer(TestExpenceRepository.layer)
-
-
-    }
+  override def spec = suite("All tests")(createSuite, deleteSuite)
 
 
 }
@@ -42,7 +44,7 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
 
 class TestExpenceRepository extends ExpenceRepository.Service {
 
-  val expenses = List(
+  var expenses = List(
     Expense(Some(1), "name", Food, 1, None),
     Expense(Some(2), "name", Food, 1, Some(1)),
     Expense(Some(3), "name", Food, 1, Some(1))
@@ -58,8 +60,17 @@ class TestExpenceRepository extends ExpenceRepository.Service {
   override def update(expense: Expense): Task[Option[Expense]] = Task(Some(expense))
 
   override def delete(id: Long): Task[Int] = Task(1)
+
+  override def delete(ids: List[Long]): Task[Int] = Task {
+    val count = expenses.count(_.id.exists(id => ids.contains(id)))
+    expenses = expenses.filter(_.id.exists(id => !ids.contains(id)))
+    count
+  }
 }
 
 object TestExpenceRepository {
-  val layer: ZLayer[Any, Nothing, ExpenceRepository] = ZLayer.succeed(new TestExpenceRepository())
+  /*
+  def is very important. it creates new layer on every call
+   */
+  def layer: ZLayer[Any, Nothing, ExpenceRepository] = ZLayer.succeed(new TestExpenceRepository())
 }

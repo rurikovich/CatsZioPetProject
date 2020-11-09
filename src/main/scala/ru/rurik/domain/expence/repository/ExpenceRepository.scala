@@ -19,6 +19,9 @@ object ExpenceRepository {
     return count of affected rows
      */
     def delete(id: Long): Task[Int]
+
+    def delete(ids: List[Long]): Task[Int]
+
   }
 
   def create(expense: Expense): RIO[ExpenceRepository, Expense] = ZIO.accessM(_.get.create(expense))
@@ -30,5 +33,7 @@ object ExpenceRepository {
   def update(expense: Expense): RIO[ExpenceRepository, Option[Expense]] = ZIO.accessM(_.get.update(expense))
 
   def delete(id: Long): RIO[ExpenceRepository, Int] = ZIO.accessM(_.get.delete(id))
+
+  def delete(ids: List[Long]): RIO[ExpenceRepository, Int] = ZIO.accessM(_.get.delete(ids))
 
 }
