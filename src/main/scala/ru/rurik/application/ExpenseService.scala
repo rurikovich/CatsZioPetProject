@@ -7,8 +7,9 @@ import ru.rurik.domain.expence.tree.ExpenseTree
 import zio.{RIO, Task, ZIO}
 
 object ExpenseService extends ZIOHelper {
+  type ExpenseTable = Map[ExpenseCategory, Long]
 
-  // TODO redisign to @tailrec if possible
+  // TODO redesign to @tailrec if possible
   def getExpenseTree(id: Long): RIO[ExpenceRepository, Option[ExpenseTree]] = for {
     expenseOpt: Option[Expense] <- ZIO.accessM[ExpenceRepository](_.get.getById(id))
     subExpenses: List[Expense] <- ZIO.accessM[ExpenceRepository](_.get.getByParentId(id))
@@ -26,7 +27,27 @@ object ExpenseService extends ZIOHelper {
     sudIds: List[Long] <- zioListFlatten(subExpenses.flatMap(_.id.map(getExpensesIds)))
   } yield List(id) ::: sudIds
 
-  def expenseTable(expenseTree: ExpenseTree): Task[Map[ExpenseCategory, Long]] = ???
+  def expenseTable(expenseTree: ExpenseTree): Task[ExpenseTable] = {
+    val value = expenseTree.value
+    val tTask: Task[ExpenseTable] = Task.succeed(Map(value.category -> value.amount))
+    expenseTree.leafs match {
+      case Some(leafs) => leafs.foldLeft(tTask) {
+        (t1Task, t2) => mergeExpenseTablesTasks(t1Task, expenseTable(t2))
+      }
+      case None => tTask
+    }
+  }
 
+  def mergeExpenseTablesTasks(t1Task: Task[ExpenseTable], t2Task: Task[ExpenseTable]): Task[ExpenseTable] = for {
+    t1 <- t1Task
+    t2 <- t2Task
+  } yield mergeExpenseTables(t1, t2)
+
+  def mergeExpenseTables(t1: ExpenseTable, t2: ExpenseTable): ExpenseTable = {
+    (t1.toList ++ t2.toList).groupBy(_._1).map {
+      case (category: ExpenseCategory, list: List[(ExpenseCategory, Long)]) =>
+        (category, list.map(_._2).sum)
+    }
+  }
 
 }
