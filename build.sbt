@@ -5,6 +5,7 @@ lazy val root = (project in file("."))
     organization := "com.rurik",
     name := "CatsZioPetProject",
     scalaVersion := "2.13.3",
+    autoCompilerPlugins := true,
     testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework")),
     scalacOptions := Seq(
       "-feature",
@@ -20,7 +21,8 @@ lazy val root = (project in file("."))
       "-Ywarn-value-discard",
       "-Ywarn-numeric-widen",
       "-Ywarn-extra-implicit",
-      "-Ywarn-unused"
+      "-Ywarn-unused",
+      "-Ymacro-annotations"
     ) ++ (if (isSnapshot.value) Seq.empty
     else
       Seq(
@@ -32,7 +34,8 @@ lazy val root = (project in file("."))
       "org.http4s" %% "http4s-dsl" % "0.21.7",
       "io.circe" %% "circe-core" % "0.13.0",
       "io.circe" %% "circe-generic" % "0.13.0",
-      "io.circe" %% "circe-literal" % "0.13.0" ,
+      "io.circe" %% "circe-literal" % "0.13.0",
+      "io.circe" %% "circe-parser" % "0.13.0",
       "org.tpolecat" %% "doobie-core" % "0.9.2",
       "org.tpolecat" %% "doobie-hikari" % "0.9.2",
       "org.typelevel" %% "jawn-parser" % "1.0.0" % "test",

@@ -1,6 +1,6 @@
 package ru.rurik.application
 
-import ru.rurik.application.ExpenseService.{ExpenseTable, _}
+import ru.rurik.application.ExpenseTreeService.{ExpenseTable, _}
 import ru.rurik.domain.expence.Expense
 import ru.rurik.domain.expence.ExpenseCategory._
 import ru.rurik.domain.expence.tree.ExpenseTree

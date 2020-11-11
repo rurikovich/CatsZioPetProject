@@ -6,15 +6,14 @@ import ru.rurik.infrastructure.db.DatabaseProvider
 import zio.blocking.Blocking
 import zio.clock.Clock
 import io.circe.{Decoder, Encoder}
-import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
+import ru.rurik.application.ExpenseTreeService
 import ru.rurik.domain.expence.Expense
 import zio._
 import zio.interop.catz._
-
-
 import ru.rurik.domain.expence.ExpenseCategoryJsonCodecs._
-
+import io.circe.generic.auto._
+import org.http4s.circe._
 
 object ExpenseService {
 
@@ -38,7 +37,7 @@ object ExpenseService {
         }
 
       case GET -> Root / LongVar(id) =>
-        ExpenceRepository.getById(id).flatMap(_.fold(NotFound())(Ok(_)))
+        ExpenseTreeService.getExpenseTree(id).flatMap(_.fold(NotFound())(Ok(_)))
 
       case req@PUT -> Root =>
         req.decode[Expense] {

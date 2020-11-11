@@ -6,7 +6,7 @@ import ru.rurik.domain.expence.repository.ExpenceRepository
 import ru.rurik.domain.expence.tree.ExpenseTree
 import zio.{RIO, Task, ZIO}
 
-object ExpenseService extends ZIOHelper {
+object ExpenseTreeService extends ZIOHelper {
   type ExpenseTable = Map[ExpenseCategory, Long]
 
   // TODO redesign to @tailrec if possible
