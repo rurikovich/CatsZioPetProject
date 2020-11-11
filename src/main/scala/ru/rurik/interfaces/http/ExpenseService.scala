@@ -14,6 +14,8 @@ import zio.interop.catz._
 import ru.rurik.domain.expence.ExpenseCategoryJsonCodecs._
 import io.circe.generic.auto._
 import org.http4s.circe._
+import ExpenseTreeService.{EmptyExpenseTable, ExpenseTable, toSimplifiedExpenseTable}
+
 
 object ExpenseService {
 
@@ -26,7 +28,6 @@ object ExpenseService {
     implicit def circeJsonDecoder[A: Decoder]: EntityDecoder[ExpenseTask, A] = jsonOf[ExpenseTask, A]
 
     implicit def circeJsonEncoder[A: Encoder]: EntityEncoder[ExpenseTask, A] = jsonEncoderOf[ExpenseTask, A]
-
 
     HttpRoutes.of[ExpenseTask] {
 
@@ -52,11 +53,17 @@ object ExpenseService {
         }
 
       case DELETE -> Root / LongVar(id) =>
-        ExpenceRepository.delete(id).flatMap {
+        ExpenseTreeService.deleteExpenseTree(id).flatMap {
           case affectedCount: Int if affectedCount > 0 => Ok(s"expense id=$id deleted")
           case _ => BadRequest(s"expense id=$id NOT deleted")
         }
 
+      case GET -> Root / "table" / LongVar(id) =>
+        val expenseTableRIO: RIO[ExpenceRepository, ExpenseTable] = for {
+          maybeTree <- ExpenseTreeService.getExpenseTree(id)
+          table: ExpenseTable <- maybeTree.map(ExpenseTreeService.expenseTable).getOrElse(Task(EmptyExpenseTable))
+        } yield table
+        expenseTableRIO.flatMap(table => Ok(toSimplifiedExpenseTable(table)))
 
     }
 

@@ -20,7 +20,7 @@ object ExpenseCategoryJsonCodecs {
   implicit val decoder: Decoder[Expense] = deriveDecoder
   implicit val encoder: Encoder[Expense] = deriveEncoder
 
-  implicit val genderDecoder: Decoder[ExpenseCategory.Value] = Decoder.decodeEnumeration(ExpenseCategory)
-  implicit val genderEncoder: Encoder[ExpenseCategory.Value] = Encoder.encodeEnumeration(ExpenseCategory)
+  implicit val expenseCategoryDecoder: Decoder[ExpenseCategory.Value] = Decoder.decodeEnumeration(ExpenseCategory)
+  implicit val expenseCategoryEncoder: Encoder[ExpenseCategory.Value] = Encoder.encodeEnumeration(ExpenseCategory)
 }
 

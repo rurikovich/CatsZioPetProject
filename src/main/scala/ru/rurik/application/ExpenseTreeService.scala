@@ -6,8 +6,15 @@ import ru.rurik.domain.expence.repository.ExpenceRepository
 import ru.rurik.domain.expence.tree.ExpenseTree
 import zio.{RIO, Task, ZIO}
 
+
 object ExpenseTreeService extends ZIOHelper {
   type ExpenseTable = Map[ExpenseCategory, Long]
+
+  def EmptyExpenseTable: Map[ExpenseCategory, Long] = Map[ExpenseCategory, Long]()
+
+  def toSimplifiedExpenseTable(t: ExpenseTable): Map[String, Long] = t.map {
+    case (category, amount) => (category.toString, amount)
+  }
 
   // TODO redesign to @tailrec if possible
   def getExpenseTree(id: Long): RIO[ExpenceRepository, Option[ExpenseTree]] = for {
