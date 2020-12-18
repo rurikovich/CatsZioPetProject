@@ -13,7 +13,7 @@ object ExpenseTreeService extends ZIOHelper {
     expenseOpt: Option[Expense] <- ZIO.accessM[ExpenceRepository](_.get.getById(id))
     subExpenses: List[Expense] <- ZIO.accessM[ExpenceRepository](_.get.getByParentId(id))
     subExpensesRIOList: List[RIO[ExpenceRepository, Option[ExpenseTree]]] = subExpenses.flatMap(_.id).map(getExpenseTree)
-    expenseTreeList: List[ExpenseTree] <- toListOfZIO(subExpensesRIOList)
+    expenseTreeList: List[ExpenseTree] <- collectAllF(subExpensesRIOList)
   } yield expenseOpt.map(ExpenseTree(_, Some(expenseTreeList)))
 
   def deleteExpenseTree(id: Long): RIO[ExpenceRepository, Int] = for {
@@ -23,7 +23,7 @@ object ExpenseTreeService extends ZIOHelper {
 
   def getExpensesIds(id: Long): RIO[ExpenceRepository, List[Long]] = for {
     subExpenses: List[Expense] <- ZIO.accessM[ExpenceRepository](_.get.getByParentId(id))
-    sudIds: List[Long] <- zioListFlatten(subExpenses.flatMap(_.id.map(getExpensesIds)))
+    sudIds: List[Long] <- collectAllF(subExpenses.flatMap(_.id.map(getExpensesIds)))
   } yield id :: sudIds
 
 }

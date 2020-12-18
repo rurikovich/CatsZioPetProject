@@ -19,7 +19,9 @@ object Tree {
     override def foldLeft[A, B](fa: Tree[A], b: B)(f: (B, A) => B): B = fa.leafs() match {
       case Some(treeList) =>
         val acc = f(b, fa.value)
-        treeList.foldLeft(acc)((b: B, tree: Tree[A]) => foldLeft(tree, b)(f))
+        treeList.foldLeft(acc)(
+          (b, tree) => foldLeft(tree, b)(f)
+        )
       case None =>
         f(b, fa.value)
     }
