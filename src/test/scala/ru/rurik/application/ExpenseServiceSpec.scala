@@ -1,10 +1,11 @@
 package ru.rurik.application
 
-import ru.rurik.application.ExpenseTreeService.{ExpenseTable, _}
+
+import ru.rurik.application.ExpenseTableService.{ExpenseTable, expenseTable, mergeExpenseTables}
+import ru.rurik.application.ExpenseTreeService.{deleteExpenseTree, getExpenseTree, getExpensesIds}
 import ru.rurik.domain.expence.Expense
 import ru.rurik.domain.expence.ExpenseCategory._
 import ru.rurik.domain.expence.tree.ExpenseTree
-import zio.Task
 import zio.test.Assertion.equalTo
 import zio.test._
 
@@ -53,14 +54,9 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
       assert(mergeExpenseTables(t1, t2))(equalTo(t))
     },
 
-    testM("mergeExpenseTablesTasks") {
-      val value: Task[ExpenseTable] = Task.succeed(t1)
-      val value1: Task[ExpenseTable] = Task.succeed(t2)
-      assertM(mergeExpenseTablesTasks(value, value1))(equalTo(t))
-    },
 
-    testM("expenseTable") {
-      assertM(expenseTable(tree))(equalTo(treeExpenseTable))
+    test("expenseTable") {
+      assert(expenseTable(tree))(equalTo(treeExpenseTable))
     }
 
   )

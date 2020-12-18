@@ -23,6 +23,7 @@ class TestExpenceRepository(var expenses: List[Expense]) extends ExpenceReposito
     expenses = expenses.filter(_.id.exists(id => !ids.contains(id)))
     count
   }
+
 }
 
 object TestExpenceRepository {
