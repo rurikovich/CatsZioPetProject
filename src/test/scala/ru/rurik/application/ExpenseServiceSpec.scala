@@ -1,7 +1,7 @@
 package ru.rurik.application
 
 
-import ru.rurik.application.ExpenseTableService.{ExpenseTable, expenseTable, mergeExpenseTables}
+import ru.rurik.application.ExpenseTableService.{ExpenseTable, expenseTable}
 import ru.rurik.application.ExpenseTreeService.{deleteExpenseTree, getExpenseTree, getExpensesIds}
 import ru.rurik.domain.expence.Expense
 import ru.rurik.domain.expence.ExpenseCategory._
@@ -49,10 +49,6 @@ object ExpenseServiceSpec extends DefaultRunnableSpec {
   )
 
   val expenseTableSuite = suite("ExpenseTable")(
-
-    test("mergeExpenseTables") {
-      assert(mergeExpenseTables(t1, t2))(equalTo(t))
-    },
 
 
     test("expenseTable") {

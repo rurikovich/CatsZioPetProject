@@ -2,7 +2,8 @@ package ru.rurik.application
 
 import ru.rurik.domain.expence.Expense
 import ru.rurik.domain.expence.ExpenseCategory.ExpenseCategory
-import ru.rurik.domain.expence.tree.{Tree}
+import ru.rurik.domain.expence.tree.Tree
+import cats.implicits._
 
 object ExpenseTableService {
 
@@ -14,26 +15,13 @@ object ExpenseTableService {
     case (category, amount) => (category.toString, amount)
   }
 
-  def expenseTable(expenseTree: Tree[Expense]): Map[ExpenseCategory, Long] = {
-    import cats.implicits._
-    import ru.rurik.domain.expence.tree.Tree._
-
+  def expenseTable(expenseTree: Tree[Expense]): Map[ExpenseCategory, Long] =
     expenseTree.foldLeft(Map.empty[ExpenseCategory, Long])(
       (table: Map[ExpenseCategory, Long], expense) => {
         val amount = table.getOrElse[Long](expense.category, 0) + expense.amount
         ((expense.category, amount) :: table.filter(_._1 != expense.category).toList).toMap
       }
-
     )
-
-  }
-
-  def mergeExpenseTables(t1: ExpenseTable, t2: ExpenseTable): ExpenseTable = {
-    (t1.toList ++ t2.toList).groupBy(_._1).map {
-      case (category: ExpenseCategory, list: List[(ExpenseCategory, Long)]) =>
-        (category, list.map(_._2).sum)
-    }
-  }
 
 
 }
